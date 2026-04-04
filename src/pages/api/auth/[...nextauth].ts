@@ -14,26 +14,20 @@ export default NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.name || !credentials?.password) {
-                    throw new Error("Missing credentials")
-                }
+                if (!credentials) return null
 
                 const user = await prisma.user.findUnique({
                     where: { name: credentials.name },
                 })
 
-                if (!user) {
-                    throw new Error("User not found")
-                }
+                if (!user) return null
 
                 const isValid = await bcrypt.compare(
                     credentials.password,
                     user.password
                 )
 
-                if (!isValid) {
-                    throw new Error("Invalid password")
-                }
+                if (!isValid) return null
 
                 return {
                     id: user.id.toString(),
@@ -45,8 +39,6 @@ export default NextAuth({
     session: {
         strategy: "jwt",
     },
-    pages: {
-        signIn: "/login",
-    },
     secret: process.env.NEXTAUTH_SECRET,
+    debug: true,
 })
