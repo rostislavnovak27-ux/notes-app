@@ -15,7 +15,7 @@ export default function Login() {
         })
 
         if (res?.ok) {
-            window.location.href = "/"
+            window.location.href = "/notes"
         } else {
             alert("Nesprávné přihlašovací údaje")
         }
