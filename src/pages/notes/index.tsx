@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from "next"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "./api/auth/[...nextauth]"
+import { authOptions } from "../api/auth/[...nextauth]"
 
 export default function Home() {
     return null
