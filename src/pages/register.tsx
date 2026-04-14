@@ -1,30 +1,33 @@
-import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { ui } from "@/components/notecard"
 
-export default function Login() {
+export default function Register() {
     const [name, setName] = useState("")
     const [password, setPassword] = useState("")
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
 
-        const res = await signIn("credentials", {
-            redirect: false,
-            name,
-            password,
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, password }),
         })
 
-        if (res?.ok) {
-            window.location.href = "/notes"
+        if (res.ok) {
+            alert("Registrace úspěšná")
+            window.location.href = "/login"
         } else {
-            alert("Nesprávné přihlašovací údaje")
+            const data = await res.json()
+            alert(data.error || "Chyba při registraci")
         }
     }
 
     return (
         <div style={{ ...ui.card.base, maxWidth: 420, margin: "80px auto" }}>
-            <h1>Přihlášení</h1>
+            <h1>Registrace</h1>
 
             <form onSubmit={handleSubmit}>
                 <input
@@ -45,18 +48,13 @@ export default function Login() {
                 <br /><br />
 
                 <button type="submit" style={{ ...ui.button.primary, marginTop: 12 }}>
-                    Přihlásit se
+                    Registrovat
                 </button>
             </form>
 
-            <div>
-                <button
-                    onClick={() => window.location.href = "/register"}
-                    style={{ ...ui.button.base, marginTop: 10 }}
-                >
-                    Registrovat se
-                </button>
-            </div>
+            <p style={{ marginTop: 14 }}>
+                Máš účet? <a href="/login" style={{ color: "#9aa7ff" }}>Přihlásit se</a>
+            </p>
         </div>
     )
 }

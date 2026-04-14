@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { ui } from "@/components/notecard"
 
 export default function NoteForm({ onCreate }: any) {
     const [title, setTitle] = useState("")
@@ -12,27 +13,14 @@ export default function NoteForm({ onCreate }: any) {
     }
 
     return (
-        <div style={{
-            marginTop: 30,
-            background: "#1a1a1a",
-            padding: 20,
-            borderRadius: 12,
-            border: "1px solid #2a2a2a"
-        }}>
+        <div style={{ ...ui.card.base, marginTop: 30 }}>
             <form onSubmit={handleSubmit}>
+
                 <input
                     placeholder="Název poznámky"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    style={{
-                        width: "100%",
-                        padding: 10,
-                        marginBottom: 10,
-                        background: "#111",
-                        border: "1px solid #333",
-                        borderRadius: 8,
-                        color: "#fff"
-                    }}
+                    style={{ ...ui.input.base, marginBottom: 10 }}
                 />
 
                 <textarea
@@ -40,30 +28,18 @@ export default function NoteForm({ onCreate }: any) {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     style={{
-                        width: "100%",
-                        padding: 10,
-                        minHeight: 80,
-                        background: "#111",
-                        border: "1px solid #333",
-                        borderRadius: 8,
-                        color: "#fff"
+                        ...ui.input.base,
+                        minHeight: 80
                     }}
                 />
 
                 <button
                     type="submit"
-                    style={{
-                        marginTop: 10,
-                        background: "#2563eb",
-                        border: "none",
-                        padding: "10px 16px",
-                        borderRadius: 8,
-                        color: "white",
-                        cursor: "pointer"
-                    }}
+                    style={{ ...ui.button.primary, marginTop: 10 }}
                 >
                     Vytvořit poznámku
                 </button>
+
             </form>
         </div>
     )

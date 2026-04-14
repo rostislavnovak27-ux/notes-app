@@ -1,95 +1,109 @@
-import { useState } from "react"
+export const ui = {
+    layout: {
+        page: {
+            minHeight: "100vh",
+            background: "#0f0f0f",
+            padding: "60px 20px",
+            color: "#e6e6e6",
+            fontFamily: "ui-sans-serif, system-ui"
+        },
+        container: {
+            maxWidth: 800,
+            margin: "0 auto",
+            width: "100%"
+        }
+    },
 
-export default function NoteCard({ note, onDelete, onUpdate }: any) {
-    const [editing, setEditing] = useState(false)
-    const [title, setTitle] = useState(note.title)
-    const [content, setContent] = useState(note.content)
+    text: {
+        title: {
+            fontSize: 28,
+            fontWeight: 600,
+            color: "#fff"
+        },
+        small: {
+            fontSize: 12,
+            color: "#666"
+        }
+    },
 
-    const handleSave = () => {
-        onUpdate(note.id, { title, content })
-        setEditing(false)
+    button: {
+        base: {
+            padding: "6px 12px",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            border: "1px solid #333",
+            background: "#1a1a1a",
+            color: "#ccc",
+            transition: "all 0.15s ease"
+        },
+
+        primary: {
+            padding: "8px 14px",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13,
+            border: "none",
+            background: "#2563eb",
+            color: "#fff"
+        },
+
+        ghost: {
+            padding: "6px 10px",
+            background: "transparent",
+            border: "1px solid transparent",
+            color: "#aaa",
+            cursor: "pointer",
+            fontSize: 13
+        },
+
+        danger: {
+            padding: "6px 10px",
+            background: "transparent",
+            color: "#ff6b6b",
+            border: "1px solid transparent",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontSize: 13
+        }
+    },
+
+    input: {
+        base: {
+            width: "100%",
+            padding: 10,
+            background: "#111",
+            border: "1px solid #333",
+            borderRadius: 8,
+            color: "#fff"
+        }
+    },
+
+    card: {
+        base: {
+            background: "#1a1a1a",
+            padding: 20,
+            borderRadius: 10,
+            border: "1px solid #2a2a2a"
+        }
+    },
+
+    listItem: {
+        base: {
+            padding: "6px 8px",
+            borderRadius: 6,
+            cursor: "pointer"
+        }
     }
+}
 
-    return (
-        <div
-            style={{
-                background: "#1a1a1a",
-                padding: 16,
-                borderRadius: 12,
-                border: "1px solid #2a2a2a",
-                marginBottom: 12
-            }}
-        >
-            {editing ? (
-                <>
-                    <input
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        style={{
-                            width: "100%",
-                            marginBottom: 8,
-                            background: "#111",
-                            color: "#fff",
-                            border: "1px solid #333",
-                            padding: 8,
-                            borderRadius: 6
-                        }}
-                    />
-
-                    <textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        style={{
-                            width: "100%",
-                            marginBottom: 8,
-                            background: "#111",
-                            color: "#fff",
-                            border: "1px solid #333",
-                            padding: 8,
-                            borderRadius: 6
-                        }}
-                    />
-
-                    <button onClick={handleSave}>
-                        Uložit
-                    </button>
-                </>
-            ) : (
-                <>
-                    <h3 style={{ marginBottom: 6 }}>{note.title}</h3>
-                    <p style={{ color: "#aaa", marginBottom: 12 }}>{note.content}</p>
-
-                    <div style={{ display: "flex", gap: 12 }}>
-                        <button
-                            onClick={() => setEditing(true)}
-                            style={{
-                                padding: "6px 12px",
-                                background: "#2d2d2d",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: 6,
-                                cursor: "pointer"
-                            }}
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            onClick={() => onDelete(note.id)}
-                            style={{
-                                padding: "6px 12px",
-                                background: "#3a1f1f",
-                                color: "#ff6b6b",
-                                border: "none",
-                                borderRadius: 6,
-                                cursor: "pointer"
-                            }}
-                        >
-                            Smazat
-                        </button>
-                    </div>
-                </>
-            )}
-        </div>
-    )
+export const hover = {
+    item: {
+        onMouseEnter: (e: any) => {
+            e.currentTarget.style.background = "#1f1f1f"
+        },
+        onMouseLeave: (e: any) => {
+            e.currentTarget.style.background = "transparent"
+        }
+    }
 }

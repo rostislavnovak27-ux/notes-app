@@ -1,13 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"
-
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
-const prismaClient = globalForPrisma.prisma || prisma
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prismaClient
+import { prisma } from "@/lib/prisma"
 
 export default async function handler(req: any, res: any) {
     const session = await getServerSession(req, res, authOptions)
@@ -15,21 +8,15 @@ export default async function handler(req: any, res: any) {
         return res.status(401).json({ error: "Neautorizovaný" })
     }
 
-    if (!session.user?.name) {
+    if (!session.user?.id) {
         return res.status(401).json({ error: "Neplatná session" })
     }
 
-    const user = await prismaClient.user.findUnique({
-        where: { name: session.user.name },
-    })
-
-    if (!user) {
-        return res.status(404).json({ error: "Uživatel nenalezen" })
-    }
+    const userId = Number(session.user.id)
 
     if (req.method === "GET") {
-        const notes = await prismaClient.note.findMany({
-            where: { userId: user.id },
+        const notes = await prisma.note.findMany({
+            where: { userId: userId },
             orderBy: { createdAt: "desc" },
         })
 
@@ -43,11 +30,11 @@ export default async function handler(req: any, res: any) {
             return res.status(400).json({ error: "Title je povinný" })
         }
 
-        const note = await prismaClient.note.create({
+        const note = await prisma.note.create({
             data: {
                 title,
                 content,
-                userId: user.id,
+                userId: userId,
             },
         })
 

@@ -1,16 +1,28 @@
 import { getSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import NoteForm from "@/components/noteform"
-import NoteCard from "@/components/notecard"
+import { useRouter } from "next/router"
+import { layout } from "@/components/ui"
+import { ui, hover } from "@/components/notecard"
 
 export default function Notes() {
     const [notes, setNotes] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const router = useRouter()
 
     const loadNotes = async () => {
-        const data = await fetch("/api/notes", { credentials: "include" }).then((r) => r.json())
-        setNotes(data)
-        setLoading(false)
+        try {
+            const res = await fetch("/api/notes", { credentials: "include" })
+            if (!res.ok) {
+                throw new Error()
+            }
+            const data = await res.json()
+            setNotes(Array.isArray(data) ? data : [])
+        } catch {
+            setNotes([])
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -59,50 +71,96 @@ export default function Notes() {
     }
 
     return (
-        <div style={{
-            minHeight: "100vh",
-            background: "#0f0f0f",
-            color: "#fff",
-            padding: "40px",
-            fontFamily: "sans-serif"
-        }}>
-            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        <div style={ui.layout.page}>
+            <div style={ui.layout.container}>
 
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                }}>
-                    <h1 style={{ fontSize: 28 }}>Moje poznámky</h1>
+                <div style={layout.header}>
+                    <h1 style={ui.text.title}>Moje poznámky</h1>
 
                     <button
                         onClick={() => signOut({ callbackUrl: "/login" })}
-                        style={{
-                            background: "#1f1f1f",
-                            color: "#fff",
-                            border: "1px solid #333",
-                            padding: "8px 14px",
-                            borderRadius: 8,
-                            cursor: "pointer"
-                        }}
+                        style={{ ...ui.button.base, background: "#1f1f1f", color: "#fff" }}
                     >
                         Odhlásit se
                     </button>
                 </div>
 
+                <div style={layout.actions}>
+                    <button
+                        onClick={() => window.open("/api/notes/export", "_blank")}
+                        style={ui.button.base}
+                    >
+                        Export
+                    </button>
+
+                    <button
+                        onClick={() => document.getElementById("importInput")?.click()}
+                        style={ui.button.base}
+                    >
+                        Import
+                    </button>
+
+                    <input
+                        id="importInput"
+                        type="file"
+                        style={{ display: "none" }}
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0]
+                            if (!file) return
+
+                            const text = await file.text()
+
+                            let json
+                            try {
+                                json = JSON.parse(text)
+                            } catch {
+                                alert("Neplatný JSON soubor")
+                                return
+                            }
+
+                            const res = await fetch("/api/notes/import", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                                body: JSON.stringify(json),
+                            })
+
+                            if (!res.ok) {
+                                alert("Chyba při importu")
+                                return
+                            }
+
+                            alert("Import hotový")
+                            await loadNotes()
+
+                            // reset input so same file can be uploaded again
+                            ;(e.target as HTMLInputElement).value = ""
+                        }}
+                    />
+                </div>
+
                 <NoteForm onCreate={handleCreate} />
 
-                <div style={{ marginTop: 30 }}>
+                <div style={layout.list}>
                     {loading ? (
                         <p>Načítání...</p>
                     ) : (
-                        notes.map((note) => (
-                            <NoteCard
-                                key={note.id}
-                                note={note}
-                                onDelete={handleDelete}
-                                onUpdate={handleUpdate}
-                            />
+                        notes.map((note, index) => (
+                            <div key={note.id}>
+                                <div style={{ ...ui.text.small, marginBottom: 4 }}>
+                                    {index + 1}.
+                                </div>
+
+                                <div
+                                    style={ui.listItem.base}
+                                    {...hover.item}
+                                    onClick={() => router.push(`/notes/${note.id}`)}
+                                >
+                                    {note.title}
+                                </div>
+                            </div>
                         ))
                     )}
                 </div>
