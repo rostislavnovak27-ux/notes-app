@@ -2,61 +2,86 @@ Notes App
 
 Webová aplikace pro správu poznámek s autentizací uživatele. Každý uživatel pracuje pouze se svými daty.
 
-**Požadavky**
+Požadavky
 
 - Node.js
 - npm
 - PostgreSQL
 
-**Instalace**
+Instalace
 
 git clone https://git.uzlabina.cz/novakro/projekt.git
 cd projekt
 npm install
 
-**.env konfigurace**
+.env konfigurace
 
-Vytvoř .env podle .env.example:
+Vytvoř soubor .env podle .env.example (soubor je v repozitáři):
+
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/notesapp"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret"
 
-**Migrace databáze**
+Migrace databáze
 
 npx prisma migrate dev
 
-**Seed (demo data)**
+Seed (demo data)
 
 npm run seed
+
 Demo uživatel:
 jméno: demo
 heslo: demo1234
 
-**Spuštění aplikace**
+Spuštění aplikace
 
 npm run dev
+
+Aplikace poběží na:
 http://localhost:3000
 
-**Export poznámek**
+Export poznámek
 
 GET /api/notes/export
 GET /api/notes/export?id=ID
 
-**Import poznámek**
+Export se stáhne jako JSON soubor.
 
-Upload JSON přes UI nebo POST /api/notes/import
+Import poznámek
+
+Možnosti:
+- přes UI (tlačítko Import v aplikaci)
+- nebo přes API:
+
+POST /api/notes/import
+
 Pravidla:
-- title povinný
+- title je povinný
 - content může být prázdný
-- poznámky se vždy vytvoří jako nové
+- import vždy vytvoří nové poznámky pro přihlášeného uživatele
 
-**Bezpečnost**
+Bezpečnost
 
-- pouze přihlášený uživatel
-- každý vidí jen své poznámky
-- hesla jsou hashovaná (bcrypt)
+- aplikace je přístupná pouze přihlášeným uživatelům
+- každý uživatel vidí pouze své poznámky
+- hesla jsou hashovaná pomocí bcrypt
+- kontrola session probíhá na serveru
 
-**Struktura projektu**
+Nasazení (Vercel)
+
+Aplikace je nasazena pomocí Vercelu.
+
+Postup:
+1. push projektu na GitHub
+2. import projektu do Vercel
+3. nastavení environment proměnných:
+   DATABASE_URL
+   NEXTAUTH_URL
+   NEXTAUTH_SECRET
+4. deploy aplikace
+
+Struktura projektu
 
 /src
 /pages
@@ -64,3 +89,10 @@ Pravidla:
 /components
 /lib
 /prisma
+
+Funkce aplikace
+
+- registrace a přihlášení uživatele
+- CRUD operace s poznámkami
+- export poznámek do JSON
+- import poznámek z JSON
