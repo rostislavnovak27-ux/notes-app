@@ -1,5 +1,7 @@
 import { getSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
+import NoteForm from "@/components/noteform"
+import NoteCard from "@/components/notecard"
 
 export default function Notes() {
     const [notes, setNotes] = useState<any[]>([])
@@ -14,30 +16,66 @@ export default function Notes() {
             })
     }, [])
 
+    const handleCreate = async ({ title, content }: any) => {
+        const res = await fetch("/api/notes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title, content }),
+        })
+
+        if (res.ok) {
+            const newNote = await res.json()
+            setNotes([newNote, ...notes])
+        }
+    }
+
     return (
-        <div style={{ padding: 40 }}>
-            <h1>Moje poznámky</h1>
+        <div style={{
+            minHeight: "100vh",
+            background: "#0f0f0f",
+            color: "#fff",
+            padding: "40px",
+            fontFamily: "sans-serif"
+        }}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
 
-            <button onClick={() => signOut({ callbackUrl: "/login" })}>
-                Odhlásit se
-            </button>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}>
+                    <h1 style={{ fontSize: 28 }}>Moje poznámky</h1>
 
-            <hr />
+                    <button
+                        onClick={() => signOut({ callbackUrl: "/login" })}
+                        style={{
+                            background: "#1f1f1f",
+                            color: "#fff",
+                            border: "1px solid #333",
+                            padding: "8px 14px",
+                            borderRadius: 8,
+                            cursor: "pointer"
+                        }}
+                    >
+                        Odhlásit se
+                    </button>
+                </div>
 
-            {loading ? (
-                <p>Načítání...</p>
-            ) : (
-                <ul>
-                    {notes.map((note) => (
-                        <li key={note.id}>
-                            <strong>{note.title}</strong>
-                            <br />
-                            {note.content}
-                            <hr />
-                        </li>
-                    ))}
-                </ul>
-            )}
+                <NoteForm onCreate={handleCreate} />
+
+                <div style={{ marginTop: 30 }}>
+                    {loading ? (
+                        <p>Načítání...</p>
+                    ) : (
+                        notes.map((note) => (
+                            <NoteCard key={note.id} note={note} />
+                        ))
+                    )}
+                </div>
+
+            </div>
         </div>
     )
 }
