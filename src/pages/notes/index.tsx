@@ -7,13 +7,14 @@ export default function Notes() {
     const [notes, setNotes] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
+    const loadNotes = async () => {
+        const data = await fetch("/api/notes", { credentials: "include" }).then((r) => r.json())
+        setNotes(data)
+        setLoading(false)
+    }
+
     useEffect(() => {
-        fetch("/api/notes")
-            .then((res) => res.json())
-            .then((data) => {
-                setNotes(data)
-                setLoading(false)
-            })
+        loadNotes()
     }, [])
 
     const handleCreate = async ({ title, content }: any) => {
@@ -22,12 +23,38 @@ export default function Notes() {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({ title, content }),
         })
 
         if (res.ok) {
-            const newNote = await res.json()
-            setNotes([newNote, ...notes])
+            await loadNotes()
+        }
+    }
+
+    const handleDelete = async (id: number) => {
+        const res = await fetch(`/api/notes/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+        })
+
+        if (res.ok) {
+            await loadNotes()
+        }
+    }
+
+    const handleUpdate = async (id: number, data: any) => {
+        const res = await fetch(`/api/notes/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(data),
+        })
+
+        if (res.ok) {
+            await loadNotes()
         }
     }
 
@@ -70,7 +97,12 @@ export default function Notes() {
                         <p>Načítání...</p>
                     ) : (
                         notes.map((note) => (
-                            <NoteCard key={note.id} note={note} />
+                            <NoteCard
+                                key={note.id}
+                                note={note}
+                                onDelete={handleDelete}
+                                onUpdate={handleUpdate}
+                            />
                         ))
                     )}
                 </div>

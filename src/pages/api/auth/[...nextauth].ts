@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 
 const prisma = new PrismaClient()
 
-export default NextAuth({
+export const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -41,4 +41,6 @@ export default NextAuth({
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: true,
-})
+}
+
+export default NextAuth(authOptions)
