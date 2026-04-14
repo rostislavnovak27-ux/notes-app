@@ -8,7 +8,11 @@ async function main() {
 
     const user = await prisma.user.upsert({
         where: { name: 'demo' },
-        update: {},
+
+        update: {
+            password: hashedPassword,
+        },
+
         create: {
             name: 'demo',
             password: hashedPassword,
@@ -27,12 +31,12 @@ async function main() {
         },
     })
 
-    console.log('Seed hotový:', user.name)
+    console.log('Seed hotovy:', user.name)
 }
 
 main()
     .catch((e) => {
-        console.error(e)
+        console.error('Chyba pri seedu:', e)
         process.exit(1)
     })
     .finally(async () => {
