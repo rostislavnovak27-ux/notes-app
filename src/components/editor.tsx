@@ -75,7 +75,7 @@ export default function Editor({ value, onChange }: any) {
     return (
         <div style={{ width: "100%" }}>
             <style>{globalStyles}</style>
-            {/* Toolbar */}
+            {}
             <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
 
                 <button

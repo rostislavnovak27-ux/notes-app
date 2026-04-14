@@ -20,13 +20,9 @@ export default async function handler(req: any, res: any) {
     const userId = Number(session.user.id)
 
     let data = req.body
-
-    // normalize to array
     if (!Array.isArray(data)) {
         data = [data]
     }
-
-    // basic limits
     if (data.length === 0) {
         return res.status(400).json({ error: "Prázdný import" })
     }
@@ -39,7 +35,6 @@ export default async function handler(req: any, res: any) {
 
     try {
         for (const item of data) {
-            // validate title
             if (!item || typeof item.title !== "string" || item.title.trim() === "") {
                 continue
             }
