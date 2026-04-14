@@ -26,8 +26,7 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Neplatné id" })
     }
 
-    let notes
-
+    let notes: any[] = []
     if (id) {
         const note = await prisma.note.findFirst({
             where: {
